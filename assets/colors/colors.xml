@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="white">#FFFFFF</color>
+    <color name="color_1">#243757</color>
+    <color name="color_2">#A1ADBF</color>
+    <color name="color_3">#66738B</color>
+    <color name="color_4">#2F80ED</color>
+    <color name="color_5">#937AEA</color>
+    <color name="color_6">#A0ACBE</color>
+    <color name="color_7">#7067F2</color>
+    <color name="color_8">#2B2B2B</color>
+    <color name="color_9">#E8E8F0</color>
+    <color name="color_10">#F7F9FD</color>
+    <color name="gradient_one_green">#D1EA7A</color>
+    <color name="gradient_two_green">#BED962</color>
+</resources>
