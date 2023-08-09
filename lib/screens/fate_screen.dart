@@ -16,7 +16,6 @@ class _FateScreenState extends State<FateScreen> {
   @override
   void initState() {
     super.initState();
-    BlocProvider.of<FateBloc>(context).add(GetFateEvent());
   }
 
   @override
@@ -46,10 +45,7 @@ class _FateScreenState extends State<FateScreen> {
                     return const CircularProgressIndicator();
                   } else if (state is LoadedState) {
                     return Text(
-                      state.fate
-                          .toString()
-                          .replaceAll('FateModel(', '')
-                          .replaceAll(".)", ""),
+                      state.fate.text,
                       style: AppTypography.gilroyMedium16
                           .copyWith(color: ColorName.color1),
                     );
