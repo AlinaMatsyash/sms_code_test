@@ -9,7 +9,7 @@ import 'package:image_picker/image_picker.dart';
 class Chat extends StatefulWidget {
   ChatUsers info;
 
-  Chat({required this.info});
+  Chat({super.key, required this.info});
 
   @override
   State<Chat> createState() => _ChatState();
@@ -77,7 +77,7 @@ class _ChatState extends State<Chat> {
       backgroundColor: ColorName.white,
       appBar: AppBar(
         elevation: 0,
-        backgroundColor: ColorName.white,
+        backgroundColor: ColorName.color9,
         centerTitle: true,
         title: Text(
           widget.info.name,
@@ -106,17 +106,18 @@ class _ChatState extends State<Chat> {
                     if (widget.info.messageText[index].type == "source") {
                       if (widget.info.messageText[index].path != '') {
                         return OvnFileCard(
+                            time: '${widget.info.messageText[index].time.hour} : ${widget.info.messageText[index].time.minute}',
                             path: widget.info.messageText[index].path);
                       } else {
                         return OwnMessageCard(
                           message: widget.info.messageText[index].message,
-                          time: widget.info.messageText[index].time.toString(),
+                          time: '${widget.info.messageText[index].time.hour} : ${widget.info.messageText[index].time.minute}',
                         );
                       }
                     } else {
                       return ReplyCard(
                         message: widget.info.messageText[index].message,
-                        time: widget.info.messageText[index].time.toString(),
+                        time: '${widget.info.messageText[index].time.hour} : ${widget.info.messageText[index].time.minute}',
                       );
                     }
                   },
@@ -233,8 +234,10 @@ class _ChatState extends State<Chat> {
 }
 
 class OvnFileCard extends StatelessWidget {
-  const OvnFileCard({Key? key, required this.path}) : super(key: key);
+  const OvnFileCard({Key? key, required this.path, required this.time})
+      : super(key: key);
   final String path;
+  final String time;
 
   @override
   Widget build(BuildContext context) {
@@ -242,14 +245,31 @@ class OvnFileCard extends StatelessWidget {
       alignment: Alignment.centerRight,
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
-        child: SizedBox(
-          width: MediaQuery.of(context).size.width / 1.5,
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(12.0),
-            child: Image.file(
-              File(path),
-              fit: BoxFit.fitHeight,
-            ),
+        child: Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(8),
+            color: Color(0xffEBEAE4),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              SizedBox(
+                width: MediaQuery.of(context).size.width / 1.5,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(12.0),
+                  child: Image.file(
+                    File(path),
+                    fit: BoxFit.fitHeight,
+                  ),
+                ),
+              ),
+              Text(
+                time,
+                style: AppTypography.gilroyMedium16.copyWith(
+                  color: ColorName.color7.withOpacity(0.6),
+                ),
+              ),
+            ],
           ),
         ),
       ),
@@ -481,7 +501,7 @@ List<ChatUsers> chatUser = [
       MessageModel(
         path: '',
         message: 'Здравствуйте, уже иду',
-        type: 'source',
+        type: '',
         time: DateTime.now().copyWith(hour: 16, minute: 22),
         answer: true,
       )
@@ -500,8 +520,8 @@ List<ChatUsers> chatUser = [
       ),
       MessageModel(
         path: '',
-        message: 'Здравствуйте, уже иду',
-        type: 'source',
+        message: 'Привет, тут сообщение бла бла бла ',
+        type: '',
         time: DateTime.now().copyWith(hour: 16, minute: 22),
         answer: true,
       )
@@ -521,7 +541,7 @@ List<ChatUsers> chatUser = [
       MessageModel(
         path: '',
         message: 'Здравствуйте, уже иду',
-        type: 'source',
+        type: '',
         time: DateTime.now().copyWith(hour: 16, minute: 22),
         answer: true,
       )

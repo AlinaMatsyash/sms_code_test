@@ -18,9 +18,9 @@ class ChatWidget extends StatelessWidget {
       },
       child: Container(
         decoration: BoxDecoration(
-          color: const Color(0xffE8E8F0),
+          color: const Color(0xffF7F9FD),
           borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: const Color(0xffE8E8F0)),
+          border: Border.all(color: const Color(0xffE8E8F0), width: 1),
         ),
         child: Padding(
           padding: const EdgeInsets.all(18.0),
@@ -51,9 +51,12 @@ class ChatWidget extends StatelessWidget {
                           style: AppTypography.gilroySemiBold17
                               .copyWith(color: ColorName.color1)),
                       const SizedBox(height: 3),
-                      Text(info.messageText.last.message,
-                          style: AppTypography.gilroyRegular15
-                              .copyWith(color: ColorName.color3)),
+                      Container(
+                        width: MediaQuery.of(context).size.width -190,
+                        child: Text(info.messageText.last.message,
+                            style: AppTypography.gilroyRegular15
+                                .copyWith(color: ColorName.color3),overflow: TextOverflow.ellipsis, maxLines: 1,),
+                      ),
                     ],
                   ),
                 ],
