@@ -1,29 +1,20 @@
+import 'package:chat_test/res/assets/assets.gen.dart';
 import 'package:chat_test/res/assets/colors.gen.dart';
 import 'package:chat_test/screens/chat_info.dart';
+import 'package:chat_test/theme/app_typography.dart';
 import 'package:flutter/material.dart';
 
 class ChatWidget extends StatelessWidget {
-  String name;
-  String messageText;
-  Image image;
-  String time;
-  bool isMessageRead;
+  ChatUsers info;
 
-  ChatWidget(
-      {required this.name,
-      required this.messageText,
-      required this.image,
-      required this.time,
-      required this.isMessageRead});
+  ChatWidget({super.key, required this.info});
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        Navigator.push(context, MaterialPageRoute(
-            builder: (context) => ChatDetailPage()
-        ));
-
+        Navigator.push(
+            context, MaterialPageRoute(builder: (context) => Chat(info: info)));
       },
       child: Container(
         decoration: BoxDecoration(
@@ -51,28 +42,28 @@ class ChatWidget extends StatelessWidget {
                               ColorName.gradientTwoGreen
                             ],
                           )),
-                      child: image),
+                      child: info.image),
                   const SizedBox(width: 12),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(name),
-                      Text(messageText),
+                      Text(info.name,
+                          style: AppTypography.gilroySemiBold17
+                              .copyWith(color: ColorName.color1)),
+                      const SizedBox(height: 3),
+                      Text(info.messageText.last.message,
+                          style: AppTypography.gilroyRegular15
+                              .copyWith(color: ColorName.color3)),
                     ],
                   ),
                 ],
               ),
               Column(
                 children: [
-                  Text(time),
                   Text(
-                    '',
-                    style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: isMessageRead
-                            ? FontWeight.bold
-                            : FontWeight.normal),
-                  ),
+                      '${info.messageText.last.time.hour} : ${info.messageText.last.time.minute}'),
+                  const SizedBox(height: 4),
+                  Assets.icons.read.svg(),
                 ],
               )
             ],

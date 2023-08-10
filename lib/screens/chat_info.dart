@@ -1,117 +1,531 @@
-import 'package:chat_test/screens/chat.dart';
-import 'package:flutter/material.dart';
+import 'dart:io';
 
-class ChatDetailPage extends StatefulWidget{
+import 'package:chat_test/res/assets/assets.gen.dart';
+import 'package:chat_test/res/assets/colors.gen.dart';
+import 'package:chat_test/theme/app_typography.dart';
+import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+
+class Chat extends StatefulWidget {
+  ChatUsers info;
+
+  Chat({required this.info});
+
   @override
-  _ChatDetailPageState createState() => _ChatDetailPageState();
+  State<Chat> createState() => _ChatState();
 }
 
-class _ChatDetailPageState extends State<ChatDetailPage> {
+class _ChatState extends State<Chat> {
+  TextEditingController controller = TextEditingController();
+  bool isIconVisible = false;
+  bool show = false;
+  FocusNode focusNode = FocusNode();
+  bool sendButton = false;
+  final TextEditingController _controller = TextEditingController();
+  final ScrollController _scrollController = ScrollController();
+  ImagePicker picker = ImagePicker();
+  XFile? file;
+
+  @override
+  void initState() {
+    super.initState();
+    //connect();
+
+    focusNode.addListener(() {
+      if (focusNode.hasFocus) {
+        setState(() {
+          show = false;
+        });
+      }
+    });
+  }
+
+  void sendMessage(String message, String path) {
+    setMessage("source", message, path);
+  }
+
+  void setMessage(String type, String message, String path) {
+    MessageModel messageModel = MessageModel(
+        path: path,
+        type: type,
+        message: message,
+        time: DateTime.now(),
+        answer: true);
+
+    setState(() {
+      widget.info.messageText.add(messageModel);
+    });
+  }
+
+  void sendImage(String path, String message) {
+    setState(() {
+      print(path);
+      print('ok');
+      widget.info.messageText.add(MessageModel(
+          path: path,
+          message: 'image',
+          type: 'source',
+          time: DateTime.now(),
+          answer: true));
+      Navigator.pop(context);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          elevation: 0,
-          automaticallyImplyLeading: false,
-          backgroundColor: Colors.white,
-          flexibleSpace: SafeArea(
-            child: Container(
-              padding: EdgeInsets.only(right: 16),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  IconButton(
-                    onPressed: (){
-                      Navigator.pop(context);
-                    },
-                    icon: Icon(Icons.arrow_back,color: Colors.black,),
-                  ),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      Text("Kriss Benwat",style: TextStyle( fontSize: 16 ,fontWeight: FontWeight.w600),),
-                      SizedBox(height: 6,),
-                      Text("Online",style: TextStyle(color: Colors.grey.shade600, fontSize: 13),),
-                    ],
-                  ),
-                  Icon(Icons.settings,color: Colors.black54,),
-                ],
-              ),
-            ),
+      backgroundColor: ColorName.white,
+      appBar: AppBar(
+        elevation: 0,
+        backgroundColor: ColorName.white,
+        centerTitle: true,
+        title: Text(
+          widget.info.name,
+          style: AppTypography.gilroySemiBold25.copyWith(
+            color: ColorName.color1,
           ),
         ),
-        body: Stack(
-          children: <Widget>[
-            ListView.builder(
-              itemCount: messages.length,
-              shrinkWrap: true,
-              padding: EdgeInsets.only(top: 10,bottom: 10),
-              physics: NeverScrollableScrollPhysics(),
-              itemBuilder: (context, index){
-                return Container(
-                  padding: EdgeInsets.only(left: 14,right: 14,top: 10,bottom: 10),
-                  child: Align(
-                    alignment: (messages[index].messageType == "receiver"?Alignment.topLeft:Alignment.topRight),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(20),
-                        color: (messages[index].messageType  == "receiver"?Colors.grey.shade200:Colors.blue[200]),
-                      ),
-                      padding: EdgeInsets.all(16),
-                      child: Text(messages[index].messageContent, style: TextStyle(fontSize: 15),),
-                    ),
-                  ),
-                );
-              },
-            ),
-            Align(
-              alignment: Alignment.bottomLeft,
-              child: Container(
-                padding: EdgeInsets.only(left: 10,bottom: 10,top: 10),
-                height: 60,
-                width: double.infinity,
-                color: Colors.white,
-                child: Row(
-                  children: <Widget>[
-                    GestureDetector(
-                      onTap: (){
-                      },
-                      child: Container(
-                        height: 30,
-                        width: 30,
-                        decoration: BoxDecoration(
-                          color: Colors.lightBlue,
-                          borderRadius: BorderRadius.circular(30),
-                        ),
-                        child: Icon(Icons.add, color: Colors.white, size: 20, ),
-                      ),
-                    ),
-                    SizedBox(width: 15,),
-                    Expanded(
-                      child: TextField(
-                        decoration: InputDecoration(
-                            hintText: "Write message...",
-                            hintStyle: TextStyle(color: Colors.black54),
-                            border: InputBorder.none
-                        ),
-                      ),
-                    ),
-                    SizedBox(width: 15,),
-                    FloatingActionButton(
-                      onPressed: (){},
-                      child: Icon(Icons.send,color: Colors.white,size: 18,),
-                      backgroundColor: Colors.blue,
-                      elevation: 0,
-                    ),
-                  ],
-
+      ),
+      body: SizedBox(
+        height: MediaQuery.of(context).size.height,
+        width: MediaQuery.of(context).size.width,
+        child: WillPopScope(
+          child: Column(
+            children: [
+              Expanded(
+                child: ListView.builder(
+                  shrinkWrap: true,
+                  controller: _scrollController,
+                  itemCount: widget.info.messageText.length + 1,
+                  itemBuilder: (context, index) {
+                    if (index == widget.info.messageText.length) {
+                      return Container(
+                        height: 35,
+                      );
+                    }
+                    if (widget.info.messageText[index].type == "source") {
+                      if (widget.info.messageText[index].path != '') {
+                        return OvnFileCard(
+                            path: widget.info.messageText[index].path);
+                      } else {
+                        return OwnMessageCard(
+                          message: widget.info.messageText[index].message,
+                          time: widget.info.messageText[index].time.toString(),
+                        );
+                      }
+                    } else {
+                      return ReplyCard(
+                        message: widget.info.messageText[index].message,
+                        time: widget.info.messageText[index].time.toString(),
+                      );
+                    }
+                  },
                 ),
               ),
-            ),
-          ],
+              Align(
+                alignment: Alignment.bottomCenter,
+                child: SizedBox(
+                  height: 60,
+                  width: MediaQuery.of(context).size.width - 16,
+                  child: Center(
+                    child: Card(
+                      color: const Color(0xffEBEAE4),
+                      margin:
+                          const EdgeInsets.only(left: 2, right: 2, bottom: 8),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(25),
+                      ),
+                      child: TextFormField(
+                        controller: _controller,
+                        focusNode: focusNode,
+                        textAlignVertical: TextAlignVertical.center,
+                        keyboardType: TextInputType.text,
+                        maxLines: 5,
+                        minLines: 1,
+                        onChanged: (value) {
+                          if (value.isNotEmpty) {
+                            setState(() {
+                              sendButton = true;
+                            });
+                          } else {
+                            setState(() {
+                              sendButton = false;
+                            });
+                          }
+                        },
+                        decoration: InputDecoration(
+                          contentPadding: const EdgeInsets.all(5),
+                          border: InputBorder.none,
+                          prefixIcon: GestureDetector(
+                            onTap: () async {
+                              file = await picker.pickImage(
+                                  source: ImageSource.gallery);
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (builder) => CameraViewPage(
+                                    path: file!.path,
+                                    onImageSend: sendImage,
+                                  ),
+                                ),
+                              );
+                            },
+                            child: Padding(
+                              padding: const EdgeInsets.all(13),
+                              child: SizedBox(
+                                  height: 20,
+                                  width: 20,
+                                  child: Assets.icons.chat.svg()),
+                            ),
+                          ),
+                          suffixIcon: _controller.text.isEmpty
+                              ? const SizedBox()
+                              : InkWell(
+                                  onTap: () {
+                                    setState(() {
+                                      widget.info.messageText.add(
+                                        MessageModel(
+                                            path: '',
+                                            message: _controller.text,
+                                            type: "source",
+                                            time: DateTime.now(),
+                                            answer: true),
+                                      );
+                                      _controller.clear();
+                                      _scrollController.animateTo(
+                                          _scrollController
+                                              .position.maxScrollExtent,
+                                          duration:
+                                              const Duration(milliseconds: 300),
+                                          curve: Curves.easeOut);
+                                      FocusScope.of(context)
+                                          .requestFocus(FocusNode());
+                                    });
+                                  },
+                                  child: Icon(Icons.send),
+                                ),
+                          hintText: 'Введите сообщение',
+                          hintStyle: AppTypography.gilroyMedium16.copyWith(
+                            color: ColorName.color7.withOpacity(0.6),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          onWillPop: () {
+            if (show) {
+              setState(() {
+                show = false;
+              });
+            } else {
+              Navigator.pop(context);
+            }
+            return Future.value(false);
+          },
         ),
+      ),
     );
   }
 }
+
+class OvnFileCard extends StatelessWidget {
+  const OvnFileCard({Key? key, required this.path}) : super(key: key);
+  final String path;
+
+  @override
+  Widget build(BuildContext context) {
+    return Align(
+      alignment: Alignment.centerRight,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+        child: SizedBox(
+          width: MediaQuery.of(context).size.width / 1.5,
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(12.0),
+            child: Image.file(
+              File(path),
+              fit: BoxFit.fitHeight,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class ReplyCard extends StatelessWidget {
+  const ReplyCard({super.key, required this.message, required this.time});
+
+  final String message;
+  final String time;
+
+  @override
+  Widget build(BuildContext context) {
+    return Align(
+      alignment: Alignment.centerLeft,
+      child: ConstrainedBox(
+        constraints: BoxConstraints(
+          maxWidth: MediaQuery.of(context).size.width - 45,
+        ),
+        child: Card(
+          elevation: 1,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+          color: ColorName.white,
+          margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+          child: Stack(
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(
+                  left: 8,
+                  right: 55,
+                  top: 8,
+                  bottom: 8,
+                ),
+                child: Text(message, style: AppTypography.gilroyMedium16),
+              ),
+              Positioned(
+                bottom: 8,
+                right: 10,
+                child: Text(
+                  time,
+                  style: AppTypography.gilroyMedium16.copyWith(
+                    color: ColorName.color7.withOpacity(0.6),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class OwnMessageCard extends StatelessWidget {
+  const OwnMessageCard({super.key, required this.message, required this.time});
+
+  final String message;
+  final String time;
+
+  @override
+  Widget build(BuildContext context) {
+    return Align(
+      alignment: Alignment.centerRight,
+      child: ConstrainedBox(
+        constraints: BoxConstraints(
+          maxWidth: MediaQuery.of(context).size.width - 45,
+        ),
+        child: Card(
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          color: const Color(0xffEBEAE4),
+          margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+          child: Stack(
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(
+                  left: 12,
+                  right: 55,
+                  top: 8,
+                  bottom: 8,
+                ),
+                child: Text(message, style: AppTypography.gilroyMedium16),
+              ),
+              Positioned(
+                bottom: 8,
+                right: 10,
+                child: Row(
+                  children: [
+                    Text(
+                      time,
+                      style: AppTypography.gilroyMedium16.copyWith(
+                        color: ColorName.color7.withOpacity(0.6),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class CameraViewPage extends StatefulWidget {
+  const CameraViewPage(
+      {Key? key, required this.path, required this.onImageSend})
+      : super(key: key);
+  final String path;
+  final Function onImageSend;
+
+  @override
+  State<CameraViewPage> createState() => _CameraViewPageState();
+}
+
+class _CameraViewPageState extends State<CameraViewPage> {
+  TextEditingController message = TextEditingController();
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.black,
+      appBar: AppBar(
+        backgroundColor: Colors.black,
+      ),
+      body: SafeArea(
+        child: SizedBox(
+          width: MediaQuery.of(context).size.width,
+          height: MediaQuery.of(context).size.height,
+          child: Stack(
+            children: [
+              SizedBox(
+                width: MediaQuery.of(context).size.width,
+                height: MediaQuery.of(context).size.height - 150,
+                child: Image.file(
+                  File(widget.path),
+                  fit: BoxFit.cover,
+                ),
+              ),
+              Positioned(
+                bottom: 0,
+                child: Container(
+                  color: Colors.black38,
+                  width: MediaQuery.of(context).size.width,
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 5, horizontal: 8),
+                  child: TextFormField(
+                    controller: message,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 17,
+                    ),
+                    maxLines: 6,
+                    minLines: 1,
+                    decoration: InputDecoration(
+                        border: InputBorder.none,
+                        hintText: "Add Caption....",
+                        hintStyle: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 17,
+                        ),
+                        suffixIcon: InkWell(
+                          onTap: () {
+                            widget.onImageSend(
+                                widget.path, message.text.trim());
+                          },
+                          child: CircleAvatar(
+                            radius: 27,
+                            backgroundColor: Colors.tealAccent[700],
+                            child: const Icon(
+                              Icons.check,
+                              color: Colors.white,
+                              size: 27,
+                            ),
+                          ),
+                        )),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class ChatUsers {
+  String name;
+  List<MessageModel> messageText;
+  Image image;
+
+  ChatUsers({
+    required this.name,
+    required this.messageText,
+    required this.image,
+  });
+}
+
+class MessageModel {
+  String type;
+  bool answer;
+  String message;
+  DateTime time;
+  String path;
+
+  MessageModel(
+      {required this.path,
+      required this.message,
+      required this.type,
+      required this.time,
+      required this.answer});
+}
+
+List<ChatUsers> chatUser = [
+  ChatUsers(
+    name: 'Военный билет',
+    messageText: [
+      MessageModel(
+        path: '',
+        message: 'Здравствуйте, вы скоро там?',
+        type: 'source',
+        time: DateTime.now().copyWith(hour: 12, minute: 40),
+        answer: true,
+      ),
+      MessageModel(
+        path: '',
+        message: 'Здравствуйте, уже иду',
+        type: 'source',
+        time: DateTime.now().copyWith(hour: 16, minute: 22),
+        answer: true,
+      )
+    ],
+    image: Assets.images.image1.image(),
+  ),
+  ChatUsers(
+    name: 'Налоговые отчеты',
+    messageText: [
+      MessageModel(
+        path: '',
+        message: 'Здравствуйте, вы скоро там?',
+        type: 'source',
+        time: DateTime.now().copyWith(hour: 12, minute: 40),
+        answer: true,
+      ),
+      MessageModel(
+        path: '',
+        message: 'Здравствуйте, уже иду',
+        type: 'source',
+        time: DateTime.now().copyWith(hour: 16, minute: 22),
+        answer: true,
+      )
+    ],
+    image: Assets.images.image2.image(),
+  ),
+  ChatUsers(
+    name: 'Военный билет',
+    messageText: [
+      MessageModel(
+        path: '',
+        message: 'Здравствуйте, вы скоро там?',
+        type: 'source',
+        time: DateTime.now().copyWith(hour: 12, minute: 40),
+        answer: true,
+      ),
+      MessageModel(
+        path: '',
+        message: 'Здравствуйте, уже иду',
+        type: 'source',
+        time: DateTime.now().copyWith(hour: 16, minute: 22),
+        answer: true,
+      )
+    ],
+    image: Assets.images.image3.image(),
+  ),
+];

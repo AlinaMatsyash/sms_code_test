@@ -10,6 +10,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await di.init();
   runApp(const MyApp());
+  print(DateTime.now());
 }
 
 class MyApp extends StatelessWidget {

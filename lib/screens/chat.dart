@@ -1,24 +1,12 @@
 import 'package:chat_test/features/chat/models/chat_user.dart';
 import 'package:chat_test/res/assets/assets.gen.dart';
 import 'package:chat_test/res/assets/colors.gen.dart';
+import 'package:chat_test/screens/chat_info.dart';
 import 'package:chat_test/theme/app_typography.dart';
 import 'package:chat_test/widgets/chat_widget.dart';
 import 'package:chat_test/widgets/text_field.dart';
 import 'package:flutter/material.dart';
-List<ChatUsersModel> chatUsers = [
-  ChatUsersModel(name: "Jane Russel", messageText: "Awesome Setup", image: Assets.images.image1.image(), time: "Now"),
-  ChatUsersModel(name: "Glady's Murphy", messageText: "That's Great", image: Assets.images.image2.image(), time: "Yesterday"),
-  ChatUsersModel(name: "Jorge Henry", messageText: "Hey where are you?", image: Assets.images.image3.image(), time: "31 Mar"),
-  ChatUsersModel(name: "Philip Fox", messageText: "Busy! Call me in 20 mins", image: Assets.images.image4.image(), time: "28 Mar"),
-  ChatUsersModel(name: "Debra Hawkins", messageText: "Thankyou, It's awesome", image: Assets.images.image5.image(), time: "23 Mar"),
-];
-List<ChatMessage> messages = [
-  ChatMessage(messageContent: "Hello, Will", messageType: "receiver"),
-  ChatMessage(messageContent: "How have you been?", messageType: "receiver"),
-  ChatMessage(messageContent: "Hey Kriss, I am doing fine dude. wbu?", messageType: "sender"),
-  ChatMessage(messageContent: "ehhhh, doing OK.", messageType: "receiver"),
-  ChatMessage(messageContent: "Is there any thing wrong?", messageType: "sender"),
-];
+
 class ChatScreen extends StatefulWidget {
   const ChatScreen({super.key});
 
@@ -95,38 +83,32 @@ class _ChatScreenState extends State<ChatScreen> {
                       const Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                        Text('Служба поддержки'),
-                        Text('Здравствуйте, обращайтесь'),
-
-                      ],),
-                      const Column(children: [
-                        Text('12:14'),
-                        Text(''),
-
-                      ],)
+                          Text('Служба поддержки'),
+                          Text('Здравствуйте, обращайтесь'),
+                        ],
+                      ),
+                      const Column(
+                        children: [
+                          Text('12:14'),
+                          Text(''),
+                        ],
+                      )
                     ],
                   ),
                 ),
               ),
               ListView.builder(
-                itemCount: chatUsers.length,
+                itemCount: chatUser.length,
                 shrinkWrap: true,
                 //padding: EdgeInsets.only(top: 16),
                 physics: NeverScrollableScrollPhysics(),
-                itemBuilder: (context, index){
+                itemBuilder: (context, index) {
                   return Padding(
                     padding: const EdgeInsets.only(top: 15),
-                    child: ChatWidget(
-                      name: chatUsers[index].name,
-                      messageText: chatUsers[index].messageText,
-                      image: chatUsers[index].image,
-                      time: chatUsers[index].time,
-                      isMessageRead: (index == 0 || index == 3)?true:false,
-                    ),
+                    child: ChatWidget(info: chatUser[index]),
                   );
                 },
               ),
-
             ],
           ),
         ),
