@@ -1,17 +1,11 @@
 # chat_test
 
-A new Flutter project.
+![Screenshot_20230901_144806](https://github.com/AlinaMatsyash/test_sms_code/assets/40697299/77ebaede-5529-439b-932c-050d2e9c74c4)
 
-## Getting Started
+![Screenshot_20230901_144833](https://github.com/AlinaMatsyash/test_sms_code/assets/40697299/39ee6802-793b-4563-983c-059aa0635fb7)
 
-This project is a starting point for a Flutter application.
+![Screenshot_20230901_144916](https://github.com/AlinaMatsyash/test_sms_code/assets/40697299/65e5de92-b1d0-4bed-8002-429f81a979d9)
 
-A few resources to get you started if this is your first Flutter project:
+![Screenshot_20230901_144959](https://github.com/AlinaMatsyash/test_sms_code/assets/40697299/86f81763-e3bc-4c0e-8ea6-1a281f1e3be8)
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
-# test_sms_code
+![Screenshot_20230901_145010](https://github.com/AlinaMatsyash/test_sms_code/assets/40697299/dd6a5a98-b4df-4558-bed7-edb6a875ce5c)
